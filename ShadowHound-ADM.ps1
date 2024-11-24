@@ -191,7 +191,7 @@ function ShadowHound-ADM {
                 $containerSearchParams = $getAdObjectParams.Clone()
                 $containerSearchParams['SearchBase'] = $containerDN
 
-                Write-Output "[*] Processing container ($($processedContainers.Count + $unprocessedContainers.Count)/$($topLevelContainers.Count)): $containerDN"
+                Write-Output "[*] Processing container ($($processedContainers.Count + $unprocessedContainers.Count + 1)/$($topLevelContainers.Count)): $containerDN"
 
                 if ($LetterSplitSearch -eq $false) {
                     try {
@@ -312,7 +312,7 @@ function ShadowHound-ADM {
 
 function Print-Logo {
     $logo = @'
-·········································································
+.........................................................................
 :  ____  _               _               _   _                       _  :
 : / ___|| |__   __ _  __| | _____      _| | | | ___  _   _ _ __   __| | :
 : \___ \| '_ \ / _` |/ _` |/ _ \ \ /\ / / |_| |/ _ \| | | | '_ \ / _` | :
@@ -320,7 +320,7 @@ function Print-Logo {
 : |____/|_| |_|\__,_|\__,_|\___/ \_/\_/ |_| |_|\___/ \__,_|_| |_|\__,_| :
 :                                                                       :
 :   Author: Yehuda Smirnov (X: @yudasm_ BlueSky: @yudasm.bsky.social)   :
-·········································································
+.........................................................................
 '@
     Write-Output $logo
 }
