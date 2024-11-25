@@ -85,6 +85,12 @@ ShadowHound-ADM -OutputFilePath "C:\Results\ldap_output.txt" -SplitSearch -Lette
 
 ## Converting Data for BloodHound
 
+If the ldap_output.txt you got using ShadowHound is too large and you want to batch you, you can do so using split_output.py:
+```bash
+# Split ldap_output.txt to 100 chunks which are named split_output_1.txt, split_output_2.txt and so on...
+python3 split_output.py -i ldap_output.txt -o split_output -n 100
+```
+
 After collecting data, use [BofHound](https://github.com/coffeegist/bofhound) to convert it into BloodHound-compatible JSON files:
 
 ```bash
