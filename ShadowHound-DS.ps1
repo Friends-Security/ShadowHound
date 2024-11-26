@@ -147,7 +147,8 @@ function ShadowHound-DS() {
     } elseif ($Server) {
         $ldapPath = "LDAP://$Server"
     } else {
-        $ldapPath = 'LDAP://RootDSE'
+        $rootDSE = New-Object System.DirectoryServices.DirectoryEntry('LDAP://RootDSE')
+        $ldapPath = "LDAP://$($rootDSE.Properties.defaultNamingContext[0])"
     }
 
     if ($Credential) {
@@ -166,7 +167,7 @@ function ShadowHound-DS() {
 
     $searcher.PageSize = 1000
 
-    $searcher.PropertiesToLoad.Add('*')
+    $silenceofthezero = $searcher.PropertiesToLoad.Add('*')
     $searcher.SecurityMasks = 'Dacl,Group,Owner'
 
     $count = 0

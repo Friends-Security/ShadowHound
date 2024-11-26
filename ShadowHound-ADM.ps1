@@ -89,11 +89,11 @@ function ShadowHound-ADM {
 
     # Prepare Get-ADObject parameters
     $getAdObjectParams = @{
-        Server     = $Server
         Properties = '*'
         LdapFilter = $LdapFilter
     }
 
+    if ($Server) { $getAdObjectParams['Server'] = $Server }
     if ($SearchBase) { $getAdObjectParams['SearchBase'] = $SearchBase }
     if ($Credential) { $getAdObjectParams['Credential'] = $Credential }
     if ($PageSize) { $getAdObjectParams['ResultPageSize'] = $PageSize }
