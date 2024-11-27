@@ -173,28 +173,28 @@ function ShadowHound-DS() {
     $count = 0
 
     $streamWriter = New-Object System.IO.StreamWriter($OutputFile, $true, [System.Text.Encoding]::UTF8)
-
     try {
-        $searchResults = $searcher.FindAll()
-    } catch {
-        Write-Output "Error during search: $_"
+
+        try {
+            $searchResults = $searcher.FindAll()
+        } catch {
+            Write-Output "Error during search: $_"
+            return
+        }
+
+        foreach ($searchResult in $searchResults) {
+            Process-AdObject -SearchResult $searchResult -StreamWriter $streamWriter
+            $count++
+            if ($count % 1000 -eq 0) {
+                Write-Output "    [*] $count objects processed..."
+                $streamWriter.Flush()
+            }
+        }
+        $streamWriter.WriteLine("Retrieved $count results total")
+    } finally {
         $streamWriter.Flush()
         $streamWriter.Close()
-        return
     }
-
-    foreach ($searchResult in $searchResults) {
-        Process-AdObject -SearchResult $searchResult -StreamWriter $streamWriter
-        $count++
-        if ($count % 1000 -eq 0) {
-            Write-Output "    [*] $count objects processed..."
-            $streamWriter.Flush()
-        }
-    }
-
-    $streamWriter.WriteLine("Retrieved $count results total")
-    $streamWriter.Flush()
-    $streamWriter.Close()
 
     Write-Output "Objects have been processed and written to $OutputFile"
     Write-Output "Retrieved $count results total"
@@ -267,12 +267,17 @@ function Process-AdObject {
                 $propertiesList += "$name`: " + ($values -join ', ')
             }
         } elseif ($valueCollection[0] -is [byte[]]) {
-            $value = $valueCollection[0]
-            $base64Value = [System.Convert]::ToBase64String($value)
-            $propertiesList += "$name`: $base64Value"
-        } elseif ($valueCollection[0] -is [Guid]) {
-            $value = $valueCollection[0]
-            $propertiesList += "$name`: $value"
+            if ($name -eq 'objectSid') {
+                $sid = New-Object System.Security.Principal.SecurityIdentifier($valueCollection[0], 0)
+                $propertiesList += "$name`: $sid"
+            } elseif ($name -eq 'objectguid') {
+                $guid = [System.Guid]::New($valueCollection[0])
+                $propertiesList += "$name`: $($guid.ToString())"
+            } else {
+                $value = $valueCollection[0]
+                $base64Value = [System.Convert]::ToBase64String($value)
+                $propertiesList += "$name`: $base64Value"
+            }
         } else {
             $value = $valueCollection[0]
             $propertiesList += "$name`: $value"
@@ -459,4 +464,3 @@ function Print-Logo {
 '@
     Write-Output $logo
 }
-
