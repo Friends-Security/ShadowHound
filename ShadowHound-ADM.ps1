@@ -105,10 +105,9 @@ function ShadowHound-ADM {
         if ($Certificates) {
 
             Write-Output '[*] Getting Configuration Naming Context...'
-            $configEnumParams = @{
-                Server     = $Server
-                Credential = $Credential
-            }
+            $configEnumParams = @{}
+            if ($Server) { $configEnumParams['Server'] = $Server }
+            if ($Credential) { $configEnumParams['Credential'] = $Credential }
             $configContext = (Get-ADRootDSE @configEnumParams).ConfigurationNamingContext
             if ($null -eq $configContext) {
                 Write-Error '[-] Failed to retrieve ConfigurationNamingContext.'
@@ -145,11 +144,13 @@ function ShadowHound-ADM {
 
             # We also need to query specifically the domain object
             $dcSearchParams = @{
-                Server     = $Server
-                Credential = $Credential
                 Properties = '*'
                 LdapFilter = '(objectClass=domain)'
             }
+
+            if ($server) { $dcSearchParams['Server'] = $Server }
+            if ($Credential) { $dcSearchParams['Credential'] = $Credential }
+
             Perform-ADQuery -SearchParams $dcSearchParams -StreamWriter $streamWriter -Count $count -PrintingThreshold $printingThreshold
                         
             # In letter split search we need to make sure the top level containers are included
@@ -290,15 +291,15 @@ function ShadowHound-ADM {
             Write-Output $failedContainer
 
             $recurseParams = @{
-                Server           = $Server
-                OutputFilePath   = "$($failedContainer.Split(',')[0].Split('=')[1])_$OutputFilePath"
-                LdapFilter       = $LdapFilter
-                Credential       = $Credential
-                ParsedContainers = $ParsedContainers
-                SearchBase       = $failedContainer
-                SplitSearch      = $true
-                Recurse          = $true
+                OutputFilePath = "$($failedContainer.Split(',')[0].Split('=')[1])_$OutputFilePath"
+                SearchBase     = $failedContainer
+                SplitSearch    = $true
+                Recurse        = $true
             }
+            if ($Server) { $recurseParams['Server'] = $Server }
+            if ($Credential) { $recurseParams['Credential'] = $Credential }
+            if ($ParsedContainers) { $recurseParams['ParsedContainers'] = $ParsedContainers }
+            if ($LdapFilter) { $recurseParams['LdapFilter'] = $LdapFilter }
 
             if ($LetterSplitSearch) {
                 $recurseParams['LetterSplitSearch'] = $true
