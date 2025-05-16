@@ -11,6 +11,8 @@ ShadowHound is a set of PowerShell scripts for Active Directory enumeration with
 
 For more details and context, check out the [blog post](https://blog.fndsec.net/2024/11/25/shadowhound/).
 
+Huge thanks to [Itay Yashar](https://www.linkedin.com/in/itay-yashar-55586a163/) for the assistance with the research & development.
+
 ## Scripts Overview
 
 ### ShadowHound-ADM.ps1
